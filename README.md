@@ -8,11 +8,11 @@ Version 1 is single-player against AI bots. Async ghost lobbies come later. The 
 
 ## Shop mockup
 
-Approved art-style and UI mockup of the recruit phase (Spirit Pavilion): anime xianxia style, a shop row, a board with attack and health on every creature, a hand tray (4/10), a sell zone, a coin counter (7/10), and a hero portrait with a hero power button.
+Approved art-style and UI mockup of the recruit phase (Spirit Pavilion): anime xianxia style, a shop row, a board with attack and health on every creature, a hand tray (4/10), a sell zone, a Spirit Stone counter (7/10), and a hero portrait with a hero power button.
 
 Small text in the image is AI-generated and partly garbled. The mockup is for style and layout only.
 
-![Spirit Pavilion recruit phase: anime xianxia shop, board with attack and health on every creature, hand tray 4/10, sell zone, coin counter 7/10, and a hero portrait with a hero power button](docs/mockups/shop-screen.jpg)
+![Spirit Pavilion recruit phase: anime xianxia shop, board with attack and health on every creature, hand tray 4/10, sell zone, Spirit Stone counter 7/10, and a hero portrait with a hero power button](docs/mockups/shop-screen.jpg)
 
 ## Design spec
 
