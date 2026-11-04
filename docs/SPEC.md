@@ -20,6 +20,7 @@ What Hearthstone Battlegrounds does today, and a first-pass spec adapting it to 
 - [Combat rules](#combat-rules)
 - [Sample units](#sample-units)
 - [Heroes (patriarchs) and hero powers](#heroes-patriarchs-and-hero-powers)
+- [Hero rules interactions](#hero-rules-interactions)
 - [Ascension (triples) and seasonal layer](#ascension-triples-and-seasonal-layer)
 - [Progression, ranking, monetization](#progression-ranking-monetization)
 - [Art direction: vivid anime xianxia](#art-direction-vivid-anime-xianxia)
@@ -82,7 +83,7 @@ Bots keep the full Battlegrounds feel in v1: because every seat is simulated loc
 - **Patriarch choice:** Bots are offered 3 patriarchs like the player; lower tiers pick at random, higher tiers pick by a strength rating and personality fit
 - **Tribe personalities:** Each bot has a preferred tribe and style: Righteous turtles behind Iron Body, Demonic sacrifices and Devours, Rogue keeps one lone Rogue and Secludes, Spirit Beast goes wide with cubs, Alchemist banks Stones and pills. Strong at Elder+, soft at low tiers; switches if its tribe is out of the run
 - **Heuristics:** Scoring per shop unit: tier value + tribe fit + triple progress + keyword need; thresholds and roll/level budgets vary by difficulty. Rogue bots score a second Rogue negatively
-- **Fairness:** At normal difficulties bots use the same shop, gold, pool and timers, with no peeking at the player's shop or future rolls
+- **Fairness:** At normal difficulties bots use the same shop, Spirit Stones, pool and timers, with no peeking at the player's shop or future rolls
 - **Names and flavor:** Bots appear as rival sect elders with names and portraits so lobbies feel alive
 
 Shared tech with v2: the combat sim is deterministic from a seed and lives in one module used by bots now and ghost validation later. v1 records each player's board per turn (locally, uploaded when online with consent) to seed the future ghost pool and to tune bots against real boards.
@@ -105,7 +106,7 @@ Shared tech with v2: the combat sim is deterministic from a seed and lives in on
 
 | Item | Draft value |
 | --- | --- |
-| Spirit Stones (gold) | 3 on turn 1, +1 per turn, cap 10 on turn 8 |
+| Spirit Stones | 3 on turn 1, +1 per turn, cap 10 on turn 8 |
 | Recruit a unit | 3 |
 | Refresh market | 1 |
 | Release (sell) | +1 |
@@ -194,7 +195,7 @@ Five Dao Chess-only keywords, used alongside the renamed Battlegrounds set. Trib
 - **Ascension:** An Ascended Devour unit eats both neighbors. Stats gained from Devour persist through ascension like other buffs.
 - **UI:** Fanged-maw icon; when dragging to play, highlight the target neighbor in red with a confirm step.
 - **Bot AI:** Play next to the lowest-value unit with high stats or keywords; never eat a pair needed for a triple (Disciple+).
-- **Balance:** Loses a board slot and gold; risk of stacking many keywords on one unit (cap duplicates).
+- **Balance:** Loses a board slot and Spirit Stones; risk of stacking many keywords on one unit (cap duplicates).
 
 ### Seclusion
 
@@ -277,7 +278,7 @@ Five Dao Chess-only keywords, used alongside the renamed Battlegrounds set. Trib
 
 ## Combat rules
 
-1. Side with more units attacks first; tie is a coin flip (our rule; Blizzard does not document theirs)
+1. Side with more units attacks first; tie is decided at random from the seed (our rule; Blizzard does not document theirs)
 2. Attackers go left to right, sides alternate; target random among Iron Body units, else random
 3. Start of combat: Tribulation, then Qi Deviation, then other effects, each left to right
 4. Simultaneous damage; deaths resolve left to right, Last Breath then Rebirth
@@ -308,17 +309,37 @@ Five Dao Chess-only keywords, used alongside the renamed Battlegrounds set. Trib
 
 > **Decided.** Battlegrounds-style heroes: each patriarch has exactly one hero power, either passive or active with a Spirit Stone cost, usable once per turn in the shop phase unless stated.
 
-| Hero | Shield | Hero power |
+| Hero | Tribe | Hero power (draft) |
 | --- | --- | --- |
-| Sword Saint Lan (Righteous) | 5 | 1 Stone: give a unit Golden Bell for next combat |
-| Abbot Huiming (Righteous) | 10 | Passive: first Righteous unit bought each turn gains Iron Body |
-| Blood Demon Ancestor (Demonic) | 6 | 1 Stone: destroy a friendly unit; give its stats to another |
-| Lone Swordsman Ye (Rogue) | 7 | Passive: if you have exactly one Rogue, it gains +1/+1 each end of market |
-| Beast Tamer Ling (Spirit Beast) | 8 | 2 Stones: summon a 1/1 Cub that copies a tribe tag of an adjacent unit |
-| Pill King Yan (Alchemist) | 8 | 2 Stones: craft a pill giving +2/+2 to a shop or board unit |
-| Wandering Immortal (Neutral) | 7 | 2 Stones: Discover a unit of your current realm |
+| Sword Saint Li Qingfeng | Righteous | Heavenly Sword Intent (2 Spirit Stones): give a friendly unit +2 Attack and Iron Body until next combat ends |
+| Abbess Mingyue of Cloud Peak | Righteous | Master's Guidance (passive): the first Righteous unit you buy each turn becomes your Disciple and gains +1/+1 permanently per Master you control |
+| Blood Demon Lord Xue Wuya | Demonic | Blood Sacrifice (0): destroy a friendly unit; gain 1 Spirit Stone and a random friendly Demonic unit gains its stats |
+| Nightshade Empress Mo Lian | Demonic | Soul Harvest (passive): whenever a friendly unit dies in combat, your leftmost unit gains +1/+1 permanently (max 5 per combat) |
+| Wandering Drunkard Bai Jiu | Rogue | Lucky Gourd (1): refresh the shop; one unit is guaranteed from one realm above yours |
+| Shadow Thief Yan Feng | Rogue | Steal Heaven's Secret (1): choose a shop unit; a random friendly unit copies one of its keywords until end of next combat |
+| Beast Tamer Hua Ling | Spirit Beast | Spirit Bond (2, once every 3 turns): tame a shop unit, add it to hand for free; it becomes a Spirit Beast |
+| Azure Dragon Ancestor | Spirit Beast | Primal Roar (passive): start of combat, your Spirit Beasts gain +1/+1 per cub summoned this game (max +5/+5) |
+| Pill King Dan Hong | Alchemist | Refine Pill (1): sell a unit and get a pill granting a friendly unit +X/+X permanently, X = the sold unit's realm tier |
+| Golden Cauldron Elder Jin | Alchemist | Stone Furnace (passive): start of each turn, +1 extra Spirit Stone if you had 3+ unspent, +2 if 6+ |
 
-MVP: 16 patriarchs, 3 per tribe plus 1 Neutral; 3 offered per run, only from tribes in that run (or Neutral).
+Confirmed: 10 of the 16 MVP heroes (2 per tribe). 6 heroes remain TBD (suggest 1 more per tribe plus 1 Neutral). Heroes are only offered when their tribe is in the run (Neutral always); 3 offered per run. Qi Shield values are TBD per hero, 0 to 10 draft.
+
+| Hero | Balance notes and risks | Bot heuristic |
+| --- | --- | --- |
+| Li Qingfeng | Strong early tempo; costs 2 of 3 early Stones, so it competes with buying | Use on the unit likely to be hit first when it is not already Iron Body; skip turns 1 to 2 unless spare Stones |
+| Mingyue | Depends on Master units; weak if few Masters are drafted | Value Righteous Masters highly; buy one Righteous unit per turn first |
+| Xue Wuya | Free economy plus stat transfer can snowball; on an Ascended unit it returns 3 copies to the pool and moves all its stats (allowed, draft) | Sacrifice the weakest non-Demonic unit when a Demonic unit exists; never a triple pair |
+| Mo Lian | Cap of 5 per combat limits wide boards; synergizes with Spirit Beast cubs | Put the best carry leftmost; favor units that summon or die |
+| Bai Jiu | Cheap high-roll; at Immortal Ascension (tier 6) no realm above, so it is a plain refresh (draft) | Use when 1 Stone spare and the shop lacks a good buy |
+| Yan Feng | Only combat keywords can be copied (Arrival, Devour, Channel do nothing); fails if no keyword in shop | Copy Golden Bell or Twin Strike onto the carry; Soul Venom onto high-Attack |
+| Hua Ling | Free unit every 3 turns is strong; cap tamed units to realm or lower | Tame the best shop unit for her tribe focus, prefer triple pieces |
+| Azure Dragon | Needs cubs; weak without them, cap +5/+5 | Draft cub summoners early, go wide |
+| Dan Hong | Pill X uses realm tier of the sold unit; still gives the normal +1 sell (draft) | Refine units you would sell anyway, pill onto the carry |
+| Elder Jin | Encourages banking; can push start-of-turn above 10 Stones | Bank 3 or 6 when the shop is weak; spend on big turns |
+
+## Hero rules interactions
+
+> **Conflicts to decide.** Master/Disciple is only a candidate keyword, yet Mingyue needs it: promote Master and Disciple to defined keywords. Unspent Spirit Stones: Stone Furnace and Golden Core Treasurer assume leftover Stones are tracked between turns even though they do not carry over; draft rule is that the count is read at start of turn before refill. Stone Furnace may exceed the 10 cap; draft allows it, like Battlegrounds' in-turn overflow. Spirit Bond's 'once every 3 turns' overrides the once-per-turn rule; a tamed unit keeps its own tribe and adds Spirit Beast as a second tag.
 
 ## Ascension (triples) and seasonal layer
 

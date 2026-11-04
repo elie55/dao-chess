@@ -2,7 +2,7 @@
 
 Dao Chess is a xianxia-themed, Hearthstone Battlegrounds-style auto-battler for Android. Play is landscape and phone-first.
 
-Five tribes share the shop: Righteous Sect, Demonic Sect, Rogue Cultivator, Spirit Beast, and Alchemist Association. Heroes each have a hero power. Cultivation realms are the shop tiers.
+Five tribes share the shop: Righteous Sect, Demonic Sect, Rogue Cultivator, Spirit Beast, and Alchemist Association. There are 10 heroes, 2 per tribe, and each has a hero power. Cultivation realms are the shop tiers.
 
 Version 1 is single-player against AI bots. Async ghost lobbies come later. The game is free to play, with a $4.99 cosmetic-only pass.
 
